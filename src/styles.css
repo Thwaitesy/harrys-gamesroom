@@ -1,0 +1,63 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #18a8f2;
+  touch-action: none;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#game {
+  width: 100%;
+  height: 100%;
+}
+
+canvas {
+  display: block;
+}
+
+body.ui-shot-reference-page #game {
+  visibility: hidden;
+}
+
+body.ui-shot-reference-page::before {
+  content: "";
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 1000;
+  width: 1280px;
+  height: 702px;
+  background: var(--ui-reference-target) top left / 1280px 702px no-repeat;
+  pointer-events: none;
+}
+
+#update-ready-button {
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top));
+  left: 50%;
+  z-index: 10;
+  transform: translateX(-50%);
+  width: min(72vw, 430px);
+  height: 63px;
+  border: 0;
+  border-radius: 999px;
+  background: center / contain no-repeat;
+  color: transparent;
+  box-shadow: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+#update-ready-button::before {
+  content: "";
+  display: none;
+}
+
+#update-ready-button[hidden] {
+  display: none;
+}
