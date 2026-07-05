@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_HEIGHT, GAME_WIDTH, BACKGROUND_COLOR } from './config/gameSettings.js';
+import { BACKGROUND_COLOR, GAME_HEIGHT, GAME_WIDTH } from './config/gameSettings.js';
 import StartScene from './scenes/StartScene.js';
 import GameScene from './scenes/GameScene.js';
 import WinScene from './scenes/WinScene.js';
@@ -7,9 +7,21 @@ import GameOverScene from './scenes/GameOverScene.js';
 import { setupUpdateWatcher } from './updateWatcher.js';
 import './styles.css';
 
-const isUiShot = new URLSearchParams(window.location.search).has('uiShot');
+const searchParams = new URLSearchParams(window.location.search);
+const isUiShot = searchParams.has('uiShot');
+const selectedGame = searchParams.get('game');
+const shouldLaunchHeroesJourney = isUiShot || selectedGame === 'heroes-journey';
 const gameWidth = isUiShot ? 1280 : GAME_WIDTH;
 const gameHeight = isUiShot ? 702 : GAME_HEIGHT;
+
+document.body.style.setProperty(
+  '--cover-robot',
+  `url("${import.meta.env.BASE_URL}assets/hero-robot.png")`
+);
+document.body.style.setProperty(
+  '--cover-witch',
+  `url("${import.meta.env.BASE_URL}assets/witch-cute.png")`
+);
 
 if (isUiShot) {
   document.body.classList.add('ui-shot-reference-page');
@@ -19,30 +31,114 @@ if (isUiShot) {
   );
 }
 
-const config = {
-  type: Phaser.AUTO,
-  parent: 'game',
-  backgroundColor: BACKGROUND_COLOR,
-  scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: gameWidth,
-    height: gameHeight
-  },
-  physics: {
-    default: 'arcade',
-    arcade: {
-      gravity: { y: 1050 },
-      debug: false
-    }
-  },
-  scene: [StartScene, GameScene, WinScene, GameOverScene]
-};
-
-const game = new Phaser.Game(config);
-
-if (import.meta.env.DEV) {
-  window.knightGame = game;
+function getPathWithGame(gameId) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('game', gameId);
+  url.searchParams.delete('uiShot');
+  return `${url.pathname}${url.search}${url.hash}`;
 }
 
-setupUpdateWatcher();
+function createGameCard({ title, subtitle, description, href, status, theme }) {
+  const card = document.createElement(href ? 'a' : 'article');
+  card.className = `game-card game-card--${theme}`;
+
+  if (href) {
+    card.href = href;
+    card.setAttribute('aria-label', `Play ${title}`);
+  } else {
+    card.setAttribute('aria-label', `${title} ${status}`);
+  }
+
+  const sceneArt = theme === 'forest'
+    ? '<span class="cover-robot"></span><span class="cover-witch"></span><span class="cover-platform"></span>'
+    : '<span class="cover-ship"></span><span class="cover-planet"></span><span class="cover-star cover-star--one"></span><span class="cover-star cover-star--two"></span>';
+
+  card.innerHTML = `
+    <div class="game-card__art" aria-hidden="true">
+      <span class="game-card__badge">${status}</span>
+      <div class="game-card__scene">${sceneArt}</div>
+    </div>
+    <div class="game-card__body">
+      <h2>${title}</h2>
+      <p class="game-card__subtitle">${subtitle}</p>
+      <p>${description}</p>
+    </div>
+  `;
+
+  return card;
+}
+
+function showGamesRoomHome() {
+  document.body.classList.add('gamesroom-home');
+  const root = document.getElementById('game');
+  root.innerHTML = '';
+
+  const shell = document.createElement('main');
+  shell.className = 'gamesroom';
+  shell.innerHTML = `
+    <section class="gamesroom__intro" aria-labelledby="gamesroom-title">
+      <p class="gamesroom__eyebrow">Harry's Gamesroom</p>
+      <h1 id="gamesroom-title">Choose a game</h1>
+    </section>
+    <section class="games-grid" aria-label="Games"></section>
+  `;
+
+  const grid = shell.querySelector('.games-grid');
+  grid.append(
+    createGameCard({
+      title: 'Heros Journey',
+      subtitle: 'Castle platform adventure',
+      description: 'Run, jump, collect coins, and zap broom fire on the way to the castle.',
+      href: getPathWithGame('heroes-journey'),
+      status: 'Play',
+      theme: 'forest'
+    }),
+    createGameCard({
+      title: 'Space Shooter',
+      subtitle: 'Arcade space battle',
+      description: 'A new space mission will live here next.',
+      status: 'Coming soon',
+      theme: 'space'
+    })
+  );
+
+  root.append(shell);
+}
+
+function launchHeroesJourney() {
+  document.body.classList.add('game-running');
+
+  const config = {
+    type: Phaser.AUTO,
+    parent: 'game',
+    backgroundColor: BACKGROUND_COLOR,
+    scale: {
+      mode: Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      width: gameWidth,
+      height: gameHeight
+    },
+    physics: {
+      default: 'arcade',
+      arcade: {
+        gravity: { y: 1050 },
+        debug: false
+      }
+    },
+    scene: [StartScene, GameScene, WinScene, GameOverScene]
+  };
+
+  const game = new Phaser.Game(config);
+
+  if (import.meta.env.DEV) {
+    window.knightGame = game;
+  }
+
+  setupUpdateWatcher();
+}
+
+if (shouldLaunchHeroesJourney) {
+  launchHeroesJourney();
+} else {
+  showGamesRoomHome();
+}

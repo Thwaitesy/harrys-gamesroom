@@ -3,7 +3,7 @@ export const GAME_HEIGHT = 540;
 export const WORLD_WIDTH = 2300;
 export const BACKGROUND_COLOR = '#77c8f2';
 
-export const GAME_TITLE_TOP = 'Knight vs Witches';
+export const GAME_TITLE_TOP = 'Heros Journey';
 export const GAME_TITLE_BOTTOM = 'The Dark Castle Adventure';
 export const LEVEL_NAME = 'Level 1: The Forest Path';
 export const WIN_MESSAGE = 'You did it!\nThe knight reached the Dark Castle!';
