@@ -22,6 +22,10 @@ document.body.style.setProperty(
   '--cover-witch',
   `url("${import.meta.env.BASE_URL}assets/witch-cute.png")`
 );
+document.body.style.setProperty(
+  '--gamesroom-bg',
+  `url("${import.meta.env.BASE_URL}assets/gamesroom-home-bg.png")`
+);
 
 if (isUiShot) {
   document.body.classList.add('ui-shot-reference-page');
@@ -38,7 +42,7 @@ function getPathWithGame(gameId) {
   return `${url.pathname}${url.search}${url.hash}`;
 }
 
-function createGameCard({ title, subtitle, description, href, status, theme }) {
+function createGameCard({ title, subtitle, href, status, theme }) {
   const card = document.createElement(href ? 'a' : 'article');
   card.className = `game-card game-card--${theme}`;
 
@@ -50,18 +54,24 @@ function createGameCard({ title, subtitle, description, href, status, theme }) {
   }
 
   const sceneArt = theme === 'forest'
-    ? '<span class="cover-robot"></span><span class="cover-witch"></span><span class="cover-platform"></span>'
-    : '<span class="cover-ship"></span><span class="cover-planet"></span><span class="cover-star cover-star--one"></span><span class="cover-star cover-star--two"></span>';
+    ? '<span class="cover-sun"></span><span class="cover-robot"></span><span class="cover-witch"></span><span class="cover-coin cover-coin--one"></span><span class="cover-coin cover-coin--two"></span><span class="cover-platform"></span>'
+    : '<span class="cover-ship"></span><span class="cover-planet"></span><span class="cover-meteor"></span><span class="cover-laser cover-laser--one"></span><span class="cover-laser cover-laser--two"></span><span class="cover-star cover-star--one"></span><span class="cover-star cover-star--two"></span>';
+  const actionIcon = href ? '▶' : '↻';
 
   card.innerHTML = `
     <div class="game-card__art" aria-hidden="true">
-      <span class="game-card__badge">${status}</span>
+      <span class="game-card__badge"></span>
       <div class="game-card__scene">${sceneArt}</div>
     </div>
     <div class="game-card__body">
-      <h2>${title}</h2>
-      <p class="game-card__subtitle">${subtitle}</p>
-      <p>${description}</p>
+      <div>
+        <h2>${title}</h2>
+        <p class="game-card__subtitle">${subtitle}</p>
+      </div>
+      <span class="game-card__action">
+        <span aria-hidden="true">${actionIcon}</span>
+        ${status}
+      </span>
     </div>
   `;
 
@@ -76,9 +86,13 @@ function showGamesRoomHome() {
   const shell = document.createElement('main');
   shell.className = 'gamesroom';
   shell.innerHTML = `
-    <section class="gamesroom__intro" aria-labelledby="gamesroom-title">
-      <p class="gamesroom__eyebrow">Harry's Gamesroom</p>
-      <h1 id="gamesroom-title">Choose a game</h1>
+    <section class="gamesroom__hero" aria-labelledby="gamesroom-title">
+      <div class="gamesroom__logo" aria-label="Harry's Gamesroom">
+        <span>Harry's</span>
+        <strong>Gamesroom</strong>
+      </div>
+      <h1 id="gamesroom-title"><span>Pick Your</span><strong>Adventure!</strong></h1>
+      <p>Choose your next game and have fun, Harry!</p>
     </section>
     <section class="games-grid" aria-label="Games"></section>
   `;
