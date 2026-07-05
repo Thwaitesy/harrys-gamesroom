@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_OVER_MESSAGE } from '../config/gameSettings.js';
+import { createGamesButton } from '../ui/gamesButton.js';
 
 export default class GameOverScene extends Phaser.Scene {
   constructor() {
@@ -9,6 +10,7 @@ export default class GameOverScene extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
     this.add.rectangle(0, 0, width, height, 0x39295c).setOrigin(0);
+    createGamesButton(this, width - 144, 18);
     this.add.text(width / 2, 170, GAME_OVER_MESSAGE, {
       fontFamily: 'Arial',
       fontSize: '44px',

@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { BACKGROUND_COLOR, GAME_HEIGHT, GAME_WIDTH } from './config/gameSettings.js';
-import StartScene from './scenes/StartScene.js';
 import GameScene from './scenes/GameScene.js';
 import WinScene from './scenes/WinScene.js';
 import GameOverScene from './scenes/GameOverScene.js';
@@ -15,7 +14,7 @@ const gameWidth = isUiShot ? 1280 : GAME_WIDTH;
 const gameHeight = isUiShot ? 702 : GAME_HEIGHT;
 
 function getPublicAssetUrl(fileName) {
-  return new URL(`${import.meta.env.BASE_URL}assets/${fileName}`, window.location.href).href;
+  return new URL(`../public/assets/${fileName}`, import.meta.url).href;
 }
 
 document.body.style.setProperty(
@@ -44,6 +43,10 @@ function getPathWithGame(gameId) {
   url.searchParams.set('game', gameId);
   url.searchParams.delete('uiShot');
   return `${url.pathname}${url.search}${url.hash}`;
+}
+
+function getStaticGamePath(gamePath) {
+  return new URL(gamePath, window.location.href).href;
 }
 
 function createGameCard({ title, subtitle, href, status, theme }) {
@@ -90,6 +93,7 @@ function showGamesRoomHome() {
   const shell = document.createElement('main');
   shell.className = 'gamesroom';
   shell.innerHTML = `
+    <img class="gamesroom__backdrop" src="${getPublicAssetUrl('gamesroom-home-bg.png')}" alt="" aria-hidden="true">
     <section class="gamesroom__hero" aria-labelledby="gamesroom-title">
       <div class="gamesroom__logo" aria-label="Harry's Gamesroom">
         <span>Harry's</span>
@@ -104,7 +108,7 @@ function showGamesRoomHome() {
   const grid = shell.querySelector('.games-grid');
   grid.append(
     createGameCard({
-      title: 'Heros Journey',
+      title: 'Heroes Journey',
       subtitle: 'Castle platform adventure',
       description: 'Run, jump, collect coins, and zap broom fire on the way to the castle.',
       href: getPathWithGame('heroes-journey'),
@@ -112,10 +116,11 @@ function showGamesRoomHome() {
       theme: 'forest'
     }),
     createGameCard({
-      title: 'Space Shooter',
+      title: 'Star Sprinter',
       subtitle: 'Arcade space battle',
-      description: 'A new space mission will live here next.',
-      status: 'Coming soon',
+      description: 'Dodge, collect blaster bolts, and zap the space bugs.',
+      href: getStaticGamePath('games/star-sprinter/'),
+      status: 'Play',
       theme: 'space'
     })
   );
@@ -143,7 +148,7 @@ function launchHeroesJourney() {
         debug: false
       }
     },
-    scene: [StartScene, GameScene, WinScene, GameOverScene]
+    scene: [GameScene, WinScene, GameOverScene]
   };
 
   const game = new Phaser.Game(config);

@@ -1,8 +1,10 @@
 import { stat, readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 
-const VERSION_PATHS = ['src', 'index.html', 'package.json'];
+const rootDir = fileURLToPath(new URL('.', import.meta.url));
+const VERSION_PATHS = ['games', 'index.html', 'package.json'];
 
 async function newestMtime(filePath) {
   const details = await stat(filePath);
@@ -45,8 +47,17 @@ function gameVersionPlugin() {
 
 export default defineConfig({
   base: './',
+  publicDir: 'games/heroes-journey/public',
   server: {
     hmr: false
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(rootDir, 'index.html'),
+        starSprinter: path.resolve(rootDir, 'games/star-sprinter/index.html')
+      }
+    }
   },
   plugins: [gameVersionPlugin()]
 });

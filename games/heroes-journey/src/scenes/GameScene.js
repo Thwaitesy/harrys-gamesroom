@@ -26,9 +26,10 @@ import {
 import Player from '../objects/Player.js';
 import Witch from '../objects/Witch.js';
 import Monster from '../objects/Monster.js';
+import { createGamesButton } from '../ui/gamesButton.js';
 
 function assetPath(fileName) {
-  return `${import.meta.env.BASE_URL}assets/${fileName}`;
+  return new URL(`../../public/assets/${fileName}`, import.meta.url).href;
 }
 
 export default class GameScene extends Phaser.Scene {
@@ -88,11 +89,11 @@ export default class GameScene extends Phaser.Scene {
     this.createBackground();
     this.createPlatforms();
 
-    const playerStart = this.uiShotMode ? { x: 1110, y: 330 } : PLAYER_RESPAWN_POSITION;
+    const playerStart = this.uiShotMode ? { x: 1110, y: 352 } : PLAYER_RESPAWN_POSITION;
     this.player = new Player(this, playerStart.x, playerStart.y);
     this.witch = new Witch(this, WITCH_START_POSITION.x, WITCH_START_POSITION.y);
     if (this.uiShotMode) {
-      this.witch.sprite.setPosition(playerStart.x + 254, 225);
+      this.witch.sprite.setPosition(playerStart.x + 254, 250);
       this.witch.sprite.setVelocityX(0);
     }
     this.monsters = this.physics.add.group();
@@ -120,13 +121,12 @@ export default class GameScene extends Phaser.Scene {
 
     this.key = this.physics.add.image(KEY_POSITION.x, KEY_POSITION.y, 'key');
     this.key.body.allowGravity = false;
+    this.key.body.setSize(54, 36).setOffset(2, 0);
     this.coins = this.physics.add.staticGroup();
     COIN_POSITIONS.forEach((coinPosition, index) => {
-      const coin = this.coins.create(coinPosition.x, coinPosition.y, this.getTextureKey('coin-art', 'coin'));
-      if (coin.texture.key === 'coin-art') {
-        coin.setScale(0.74);
-      }
-      coin.body.setSize(28, 28).setOffset(10, 10);
+      const coin = this.coins.create(coinPosition.x, coinPosition.y, 'coin');
+      coin.body.setSize(42, 42).setOffset(11, 11);
+      coin.refreshBody();
       if (this.uiShotMode && index < this.coinsCollected) {
         coin.disableBody(true, true);
         return;
@@ -198,7 +198,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     const knight = this.make.graphics({ x: 0, y: 0, add: false });
-    knight.fillStyle(0x173259, 0.28).fillEllipse(38, 68, 48, 12);
     knight.lineStyle(4, 0x617486).lineBetween(22, 10, 15, 0);
     knight.lineStyle(4, 0x617486).lineBetween(53, 10, 60, 0);
     knight.fillStyle(0xdce8f2).fillCircle(14, 0, 4);
@@ -481,11 +480,12 @@ export default class GameScene extends Phaser.Scene {
     this.hudLayer = this.add.container(0, 0).setScrollFactor(0).setDepth(100);
 
     if (this.uiShotMode && this.textures.exists('ui-hud-target')) {
-      this.add.image(10.5, 9.9, 'ui-hud-target')
+      this.add.image(16, 14, 'ui-hud-target')
         .setOrigin(0)
-        .setDisplaySize(246.5, 184.3)
+        .setDisplaySize(210, 157)
         .setScrollFactor(0)
         .setDepth(103);
+      this.createGamesButton();
       this.createRestartButton();
       this.messageText = this.add.text(GAME_WIDTH / 2, 98, '', {
         fontFamily: 'Arial',
@@ -498,31 +498,32 @@ export default class GameScene extends Phaser.Scene {
       return;
     }
 
-    this.addGlassPanel(this.hudLayer, 16, 14, 252, 176, 26, 0x0074d6, 0.46, 0x9cf4ff);
-    this.addHudRow(56, 54, 'heart');
-    this.addHudRow(56, 106, 'key');
-    this.addHudRow(56, 158, 'coin');
+    this.addGlassPanel(this.hudLayer, 16, 14, 214, 154, 22, 0x0074d6, 0.44, 0x9cf4ff);
+    this.addHudRow(48, 48, 'heart');
+    this.addHudRow(48, 92, 'key');
+    this.addHudRow(48, 136, 'coin');
 
-    this.add.line(0, 0, 92, 82, 244, 82, 0x9cf4ff, 0.2).setScrollFactor(0).setDepth(101);
-    this.add.line(0, 0, 92, 134, 244, 134, 0x9cf4ff, 0.2).setScrollFactor(0).setDepth(101);
+    this.add.line(0, 0, 78, 70, 211, 70, 0x9cf4ff, 0.2).setScrollFactor(0).setDepth(101);
+    this.add.line(0, 0, 78, 114, 211, 114, 0x9cf4ff, 0.2).setScrollFactor(0).setDepth(101);
 
-    this.heartsLabel = this.addHudText(92, 31, 'HEARTS', 16, '#ffffff');
-    this.keyLabel = this.addHudText(92, 83, 'KEY', 16, '#ffffff');
-    this.coinLabel = this.addHudText(92, 135, 'COINS', 16, '#ffffff');
+    this.heartsLabel = this.addHudText(78, 28, 'HEARTS', 14, '#ffffff');
+    this.keyLabel = this.addHudText(78, 72, 'KEY', 14, '#ffffff');
+    this.coinLabel = this.addHudText(78, 116, 'COINS', 14, '#ffffff');
 
     this.heartIcons = [];
     for (let i = 0; i < PLAYER_STARTING_HEARTS; i += 1) {
       this.heartIcons.push(
-        this.add.image(94 + i * 29, 64, 'hud-heart')
-          .setScale(0.72)
+        this.add.image(80 + i * 24, 56, 'hud-heart')
+          .setScale(0.58)
           .setScrollFactor(0)
           .setDepth(103)
       );
     }
-    this.keyValueText = this.addHudText(92, 108, '', 19, '#b8ff70');
-    this.coinValueText = this.addHudText(92, 160, '', 21, '#ffd43b');
+    this.keyValueText = this.addHudText(78, 92, '', 17, '#b8ff70');
+    this.coinValueText = this.addHudText(78, 136, '', 18, '#ffd43b');
 
     this.createRestartButton();
+    this.createGamesButton();
 
     this.messageText = this.add.text(GAME_WIDTH / 2, 98, '', {
       fontFamily: 'Arial',
@@ -590,10 +591,10 @@ export default class GameScene extends Phaser.Scene {
   }
 
   createRestartButton() {
-    const x = this.uiShotMode ? 796 : GAME_WIDTH - 180;
-    const y = this.uiShotMode ? 16 : 22;
-    const width = this.uiShotMode ? 164 : 160;
-    const height = 58;
+    const x = this.uiShotMode ? 807 : GAME_WIDTH - 148;
+    const y = this.uiShotMode ? 18 : 20;
+    const width = this.uiShotMode ? 128 : 124;
+    const height = 44;
     const button = this.add.container(x, y).setScrollFactor(0).setDepth(105);
 
     if (this.textures.exists('ui-restart-target')) {
@@ -613,15 +614,15 @@ export default class GameScene extends Phaser.Scene {
     bg.fillStyle(0xc9185a, 0.88).fillRoundedRect(0, height / 2, width, height / 2, 18);
     bg.lineStyle(4, 0xffffff, 0.82).strokeRoundedRect(1, 1, width - 2, height - 2, 18);
     bg.lineStyle(3, 0xff9fba, 0.82).strokeRoundedRect(8, 8, width - 16, height - 16, 13);
-    const icon = this.add.text(31, 28, '↻', {
+    const icon = this.add.text(25, 22, '↻', {
       fontFamily: 'Arial',
-      fontSize: '34px',
+      fontSize: '26px',
       color: '#ffffff',
       fontStyle: 'bold'
     }).setOrigin(0.5);
-    const label = this.add.text(60, 16, 'RESTART', {
+    const label = this.add.text(48, 12, 'RESTART', {
       fontFamily: 'Arial',
-      fontSize: '21px',
+      fontSize: '16px',
       color: '#ffffff',
       fontStyle: 'bold'
     });
@@ -630,12 +631,19 @@ export default class GameScene extends Phaser.Scene {
     button.add([shadow, bg, icon, label, hitZone]);
   }
 
+  createGamesButton() {
+    const x = this.uiShotMode ? 686 : GAME_WIDTH - 262;
+    const y = this.uiShotMode ? 18 : 20;
+    const width = this.uiShotMode ? 96 : 104;
+    createGamesButton(this, x, y, width, 44);
+  }
+
   createTouchControls() {
     this.touchButtons = {
-      left: this.createControlButton(97.6, 456.2, 'left', '', 66, 0x15a8ff, 0x06356d, '<', 'ui-left-target'),
-      right: this.createControlButton(254.6, 456.2, 'right', '', 66, 0x15a8ff, 0x06356d, '>', 'ui-right-target'),
-      shoot: this.createControlButton(727.4, 455.0, 'shoot', 'ZAP', 72, 0xb143ff, 0x2b0b68, '⚡', 'ui-zap-target'),
-      jump: this.createControlButton(883.1, 455.0, 'jump', 'JUMP', 74, 0x6dff63, 0x0b671f, '^', 'ui-jump-target')
+      left: this.createControlButton(58, 482, 'left', '', 38, 0x15a8ff, 0x06356d, '<', 'ui-left-target'),
+      right: this.createControlButton(150, 482, 'right', '', 38, 0x15a8ff, 0x06356d, '>', 'ui-right-target'),
+      shoot: this.createControlButton(800, 482, 'shoot', 'ZAP', 41, 0xb143ff, 0x2b0b68, '⚡', 'ui-zap-target'),
+      jump: this.createControlButton(902, 482, 'jump', 'JUMP', 41, 0x6dff63, 0x0b671f, '^', 'ui-jump-target')
     };
 
     this.input.on('pointerup', this.boundReleasePointerFromAllControls);
@@ -647,10 +655,10 @@ export default class GameScene extends Phaser.Scene {
 
     if (artKey && this.textures.exists(artKey)) {
       const artSizes = {
-        'ui-left-target': { width: 139.5, height: 138.9 },
-        'ui-right-target': { width: 139.5, height: 138.9 },
-        'ui-zap-target': { width: 143.6, height: 143.0 },
-        'ui-jump-target': { width: 145.9, height: 144.7 }
+        'ui-left-target': { width: 82, height: 82 },
+        'ui-right-target': { width: 82, height: 82 },
+        'ui-zap-target': { width: 88, height: 88 },
+        'ui-jump-target': { width: 88, height: 88 }
       };
       const artSize = artSizes[artKey];
       const art = this.add.image(0, 0, artKey)

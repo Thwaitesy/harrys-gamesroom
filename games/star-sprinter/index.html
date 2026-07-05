@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Star Sprinter</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="game-topbar">
+        <a class="home-link" href="../../">Games</a>
+      </header>
+
+      <section class="arcade" aria-label="Star Sprinter game">
+        <canvas id="game" width="760" height="900"></canvas>
+
+        <div class="hud" aria-hidden="true">
+          <div>
+            <span class="label">Score</span>
+            <strong id="score">0</strong>
+          </div>
+          <div>
+            <span class="label">Best</span>
+            <strong id="best">0</strong>
+          </div>
+          <div>
+            <span class="label">Lives</span>
+            <strong id="lives">3</strong>
+          </div>
+          <div>
+            <span class="label">Gun</span>
+            <strong id="power">1</strong>
+          </div>
+        </div>
+
+        <div id="overlay" class="overlay">
+          <h1>Star Sprinter</h1>
+          <p>Dodge, collect blaster bolts, and zap the space bugs.</p>
+          <button id="startButton" type="button">Start</button>
+        </div>
+      </section>
+
+      <nav class="controls" aria-label="Game controls">
+        <button id="leftButton" class="control-button" type="button" aria-label="Move left">◀</button>
+        <button id="fireButton" class="control-button fire" type="button" aria-label="Fire">●</button>
+        <button id="rightButton" class="control-button" type="button" aria-label="Move right">▶</button>
+      </nav>
+    </main>
+
+    <script type="module" src="./game.js"></script>
+  </body>
+</html>

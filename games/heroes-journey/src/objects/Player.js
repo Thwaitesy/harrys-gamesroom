@@ -8,12 +8,12 @@ import {
 export default class Player {
   constructor(scene, x, y) {
     this.scene = scene;
-    const textureKey = scene.textures.exists('knight-art') ? 'knight-art' : 'knight';
+    const textureKey = 'knight';
     this.sprite = scene.physics.add.sprite(x, y, textureKey);
-    this.sprite.setScale(textureKey === 'knight-art' ? 0.68 : 1.22);
+    this.sprite.setScale(1.08);
     this.sprite.setCollideWorldBounds(false);
-    this.sprite.setSize(textureKey === 'knight-art' ? 66 : 38, textureKey === 'knight-art' ? 96 : 56);
-    this.sprite.setOffset(textureKey === 'knight-art' ? 50 : 19, textureKey === 'knight-art' ? 60 : 12);
+    this.sprite.setSize(34, 54);
+    this.sprite.setOffset(20, 12);
     this.sprite.body.setMaxVelocity(PLAYER_SPEED, 900);
     this.jumpWasDown = false;
     this.coyoteJumpUntil = 0;

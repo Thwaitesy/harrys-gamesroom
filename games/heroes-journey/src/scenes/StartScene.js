@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_TITLE_BOTTOM, GAME_TITLE_TOP, LEVEL_NAME } from '../config/gameSettings.js';
+import { createGamesButton } from '../ui/gamesButton.js';
 
 export default class StartScene extends Phaser.Scene {
   constructor() {
@@ -14,6 +15,7 @@ export default class StartScene extends Phaser.Scene {
 
     const { width, height } = this.scale;
     this.add.rectangle(0, 0, width, height, 0x77c8f2).setOrigin(0);
+    createGamesButton(this, width - 144, 18);
     this.add.circle(770, 115, 56, 0xfff1a8, 0.95);
     this.add.text(width / 2, 110, GAME_TITLE_TOP, {
       fontFamily: 'Arial',

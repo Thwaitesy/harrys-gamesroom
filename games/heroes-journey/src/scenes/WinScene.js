@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { WIN_MESSAGE } from '../config/gameSettings.js';
+import { createGamesButton } from '../ui/gamesButton.js';
 
 export default class WinScene extends Phaser.Scene {
   constructor() {
@@ -9,6 +10,7 @@ export default class WinScene extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
     this.add.rectangle(0, 0, width, height, 0x8ee6b0).setOrigin(0);
+    createGamesButton(this, width - 144, 18);
     this.add.text(width / 2, 170, WIN_MESSAGE, {
       fontFamily: 'Arial',
       fontSize: '46px',

@@ -3,7 +3,7 @@ export const GAME_HEIGHT = 540;
 export const WORLD_WIDTH = 2300;
 export const BACKGROUND_COLOR = '#77c8f2';
 
-export const GAME_TITLE_TOP = 'Heros Journey';
+export const GAME_TITLE_TOP = 'Heroes Journey';
 export const GAME_TITLE_BOTTOM = 'The Dark Castle Adventure';
 export const LEVEL_NAME = 'Level 1: The Forest Path';
 export const WIN_MESSAGE = 'You did it!\nThe knight reached the Dark Castle!';
@@ -12,7 +12,7 @@ export const GAME_OVER_MESSAGE = 'Oh no!\nThe witches got you.\nTry again!';
 export const PLAYER_SPEED = 215;
 export const PLAYER_JUMP_FORCE = 650;
 export const PLAYER_STARTING_HEARTS = 5;
-export const PLAYER_RESPAWN_POSITION = { x: 95, y: 430 };
+export const PLAYER_RESPAWN_POSITION = { x: 285, y: 442 };
 export const PLAYER_INVINCIBLE_MS = 1000;
 export const PLAYER_COYOTE_MS = 170;
 export const PLAYER_JUMP_BUFFER_MS = 170;
@@ -22,7 +22,7 @@ export const BLASTER_RANGE = 620;
 export const BLASTER_OFFSET = { x: 34, y: 8 };
 
 export const WITCH_SPEED = 38;
-export const WITCH_START_POSITION = { x: 1190, y: 235 };
+export const WITCH_START_POSITION = { x: 1190, y: 250 };
 export const WITCH_PATROL_DISTANCE = 170;
 
 export const MONSTER_CHASE_DISTANCE = 230;
@@ -37,15 +37,15 @@ export const FIREBALL_BROOM_OFFSET = { x: -44, y: 22 };
 export const MAGIC_SPEED = FIREBALL_SPEED;
 export const MAGIC_DAMAGE = FIREBALL_DAMAGE;
 
-export const KEY_POSITION = { x: 700, y: 300 };
+export const KEY_POSITION = { x: 700, y: 326 };
 export const DOOR_POSITION = { x: 2110, y: 375 };
 
 export const COIN_POSITIONS = [
-  { x: 365, y: 360 },
-  { x: 715, y: 310 },
-  { x: 1095, y: 350 },
-  { x: 1485, y: 305 },
-  { x: 1845, y: 355 }
+  { x: 365, y: 402 },
+  { x: 715, y: 334 },
+  { x: 1095, y: 374 },
+  { x: 1485, y: 330 },
+  { x: 1845, y: 378 }
 ];
 
 export const LEVEL_MESSAGES = {

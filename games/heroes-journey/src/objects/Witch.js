@@ -7,10 +7,10 @@ export default class Witch {
     this.endX = x + WITCH_PATROL_DISTANCE;
     const textureKey = scene.textures.exists('witch-art') ? 'witch-art' : 'witch';
     this.sprite = scene.physics.add.sprite(x, y, textureKey);
-    this.sprite.setScale(textureKey === 'witch-art' ? 0.68 : 1.42);
+    this.sprite.setScale(textureKey === 'witch-art' ? 0.42 : 0.98);
     this.sprite.body.allowGravity = false;
-    this.sprite.body.setSize(textureKey === 'witch-art' ? 120 : 74, textureKey === 'witch-art' ? 92 : 54);
-    this.sprite.body.setOffset(textureKey === 'witch-art' ? 38 : 12, textureKey === 'witch-art' ? 58 : 18);
+    this.sprite.body.setSize(textureKey === 'witch-art' ? 82 : 54, textureKey === 'witch-art' ? 68 : 42);
+    this.sprite.body.setOffset(textureKey === 'witch-art' ? 58 : 22, textureKey === 'witch-art' ? 78 : 21);
     this.sprite.setVelocityX(WITCH_SPEED);
     this.sprite.setImmovable(true);
   }
