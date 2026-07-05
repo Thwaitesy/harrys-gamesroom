@@ -14,24 +14,28 @@ const shouldLaunchHeroesJourney = isUiShot || selectedGame === 'heroes-journey';
 const gameWidth = isUiShot ? 1280 : GAME_WIDTH;
 const gameHeight = isUiShot ? 702 : GAME_HEIGHT;
 
+function getPublicAssetUrl(fileName) {
+  return new URL(`${import.meta.env.BASE_URL}assets/${fileName}`, window.location.href).href;
+}
+
 document.body.style.setProperty(
   '--cover-robot',
-  `url("${import.meta.env.BASE_URL}assets/hero-robot.png")`
+  `url("${getPublicAssetUrl('hero-robot.png')}")`
 );
 document.body.style.setProperty(
   '--cover-witch',
-  `url("${import.meta.env.BASE_URL}assets/witch-cute.png")`
+  `url("${getPublicAssetUrl('witch-cute.png')}")`
 );
 document.body.style.setProperty(
   '--gamesroom-bg',
-  `url("${import.meta.env.BASE_URL}assets/gamesroom-home-bg.png")`
+  `url("${getPublicAssetUrl('gamesroom-home-bg.png')}")`
 );
 
 if (isUiShot) {
   document.body.classList.add('ui-shot-reference-page');
   document.body.style.setProperty(
     '--ui-reference-target',
-    `url("${import.meta.env.BASE_URL}assets/ui-reference-target-1280.png")`
+    `url("${getPublicAssetUrl('ui-reference-target-1280.png')}")`
   );
 }
 
@@ -92,7 +96,7 @@ function showGamesRoomHome() {
         <strong>Gamesroom</strong>
       </div>
       <h1 id="gamesroom-title"><span>Pick Your</span><strong>Adventure!</strong></h1>
-      <p>Choose your next game and have fun, Harry!</p>
+      <p>Choose your next game and start the adventure!</p>
     </section>
     <section class="games-grid" aria-label="Games"></section>
   `;
