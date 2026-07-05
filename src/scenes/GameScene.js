@@ -69,7 +69,10 @@ export default class GameScene extends Phaser.Scene {
       jump: new Set(),
       shoot: new Set()
     };
+    this.boundReleasePointerFromAllControls = (pointer) => this.releasePointerFromAllControls(pointer);
+    this.boundClearTouchControls = () => this.clearTouchControls();
     this.input.addPointer(4);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.boundClearTouchControls);
 
     if (this.uiShotMode && this.textures.exists('ui-reference-target')) {
       this.referenceShotMode = true;
@@ -171,7 +174,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.restartKey)) {
-      this.scene.restart();
+      this.restartGame();
       return;
     }
 
@@ -598,7 +601,7 @@ export default class GameScene extends Phaser.Scene {
         .setOrigin(0)
         .setDisplaySize(width, height);
       const hitZone = this.add.zone(width / 2, height / 2, width + 18, height + 16).setInteractive({ useHandCursor: true });
-      hitZone.on('pointerdown', () => this.scene.restart());
+      hitZone.on('pointerdown', () => this.restartGame());
       button.add([art, hitZone]);
       return;
     }
@@ -623,7 +626,7 @@ export default class GameScene extends Phaser.Scene {
       fontStyle: 'bold'
     });
     const hitZone = this.add.zone(width / 2, height / 2, width + 18, height + 16).setInteractive({ useHandCursor: true });
-    hitZone.on('pointerdown', () => this.scene.restart());
+    hitZone.on('pointerdown', () => this.restartGame());
     button.add([shadow, bg, icon, label, hitZone]);
   }
 
@@ -635,8 +638,8 @@ export default class GameScene extends Phaser.Scene {
       jump: this.createControlButton(883.1, 455.0, 'jump', 'JUMP', 74, 0x6dff63, 0x0b671f, '^', 'ui-jump-target')
     };
 
-    this.input.on('pointerup', (pointer) => this.releasePointerFromAllControls(pointer));
-    this.input.on('pointercancel', (pointer) => this.releasePointerFromAllControls(pointer));
+    this.input.on('pointerup', this.boundReleasePointerFromAllControls);
+    this.input.on('pointercancel', this.boundReleasePointerFromAllControls);
   }
 
   createControlButton(x, y, key, label, radius, glowColor, fillColor, icon = label, artKey = null) {
@@ -653,8 +656,7 @@ export default class GameScene extends Phaser.Scene {
       const art = this.add.image(0, 0, artKey)
         .setDisplaySize(artSize.width, artSize.height);
       const hitZone = this.add.zone(0, 0, radius * 2.35, radius * 2.35).setInteractive();
-      hitZone.on('pointerdown', (pointer) => this.pressTouchControl(key, pointer));
-      hitZone.on('pointerup', (pointer) => this.releaseTouchControl(key, pointer));
+      this.addTouchControlEvents(hitZone, key);
       button.add([art, hitZone]);
       button.restScale = 1;
       return button;
@@ -688,11 +690,16 @@ export default class GameScene extends Phaser.Scene {
     labelText.setVisible(label.length > 0);
     const hitZone = this.add.zone(0, 0, radius * 2.35, radius * 2.35).setInteractive();
 
-    hitZone.on('pointerdown', (pointer) => this.pressTouchControl(key, pointer));
-    hitZone.on('pointerup', (pointer) => this.releaseTouchControl(key, pointer));
+    this.addTouchControlEvents(hitZone, key);
     button.add([glow, outer, ring, face, shine, iconText, labelText, hitZone]);
     button.restScale = 1;
     return button;
+  }
+
+  addTouchControlEvents(hitZone, key) {
+    hitZone.on('pointerdown', (pointer) => this.pressTouchControl(key, pointer));
+    hitZone.on('pointerup', (pointer) => this.releaseTouchControl(key, pointer));
+    hitZone.on('pointerupoutside', (pointer) => this.releaseTouchControl(key, pointer));
   }
 
   pressTouchControl(key, pointer) {
@@ -715,7 +722,34 @@ export default class GameScene extends Phaser.Scene {
     });
   }
 
-  setControlPressedState(key, isPressed) {
+  clearTouchControls() {
+    if (!this.controlPointers || !this.touchControls) {
+      return;
+    }
+
+    Object.keys(this.controlPointers).forEach((key) => {
+      this.controlPointers[key].clear();
+      this.touchControls[key] = false;
+      this.setControlPressedState(key, false, false);
+    });
+
+    if (this.input && this.boundReleasePointerFromAllControls) {
+      this.input.off('pointerup', this.boundReleasePointerFromAllControls);
+      this.input.off('pointercancel', this.boundReleasePointerFromAllControls);
+    }
+  }
+
+  restartGame() {
+    this.clearTouchControls();
+    this.scene.restart();
+  }
+
+  startScene(sceneKey) {
+    this.clearTouchControls();
+    this.scene.start(sceneKey);
+  }
+
+  setControlPressedState(key, isPressed, shouldAnimate = true) {
     const button = this.touchButtons?.[key];
     if (!button || button.isPressed === isPressed) {
       return;
@@ -723,6 +757,12 @@ export default class GameScene extends Phaser.Scene {
 
     button.isPressed = isPressed;
     this.tweens.killTweensOf(button);
+    if (!shouldAnimate) {
+      button.setScale(1);
+      button.setAlpha(1);
+      return;
+    }
+
     this.tweens.add({
       targets: button,
       scale: isPressed ? 0.9 : 1,
@@ -959,7 +999,7 @@ export default class GameScene extends Phaser.Scene {
       return;
     }
 
-    this.scene.start('WinScene');
+    this.startScene('WinScene');
   }
 
   damagePlayer(amount = 1, message = 'Ouch! Lost one heart.') {
@@ -973,7 +1013,7 @@ export default class GameScene extends Phaser.Scene {
 
     if (this.hearts <= 0) {
       this.cameras.main.flash(220, 210, 60, 90);
-      this.scene.start('GameOverScene');
+      this.startScene('GameOverScene');
       return;
     }
 
